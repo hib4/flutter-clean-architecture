@@ -15,7 +15,8 @@ class GetConcreteNumberTrivia implements UseCase<NumberTrivia, Params> {
     return await repository.getConcreteNumberTrivia(params.number);
   }
 }
- class Params extends Equatable {
+
+class Params extends Equatable {
   const Params({required this.number});
 
   final int number;
@@ -23,4 +24,4 @@ class GetConcreteNumberTrivia implements UseCase<NumberTrivia, Params> {
   @override
   // TODO: implement props
   List<Object?> get props => [number];
- }
+}
