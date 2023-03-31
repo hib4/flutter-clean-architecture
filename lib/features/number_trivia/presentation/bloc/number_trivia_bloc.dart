@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_clean_architecture/core/use_cases/use_case.dart';
 import 'package:flutter_clean_architecture/core/utils/input_converter.dart';
 import 'package:flutter_clean_architecture/features/number_trivia/domain/entities/number_trivia.dart';
 import 'package:flutter_clean_architecture/features/number_trivia/presentation/bloc/state/initial_number_trivia_state.dart';
@@ -32,14 +33,15 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
         _getRandomNumberTrivia = random,
         _inputConverter = inputConverter,
         super(InitialNumberTriviaState()) {
-    on<GetTriviaForConcreteNumber>(_concreteNumberTriviaHandler);
+    on<GetTriviaForConcreteNumber>(_concreteTriviaEventHandler);
+    on<GetTriviaForRandomNumber>(_randomTriviaEventHandler);
   }
 
   final GetConcreteNumberTrivia _getConcreteNumberTrivia;
   final GetRandomNumberTrivia _getRandomNumberTrivia;
   final InputConverter _inputConverter;
 
-  Future<void> _concreteNumberTriviaHandler(
+  Future<void> _concreteTriviaEventHandler(
     GetTriviaForConcreteNumber event,
     Emitter<NumberTriviaState> emit,
   ) async {
@@ -63,6 +65,17 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
     );
   }
 
+  Future<void> _randomTriviaEventHandler(
+    GetTriviaForRandomNumber event,
+    Emitter<NumberTriviaState> emit,
+  ) async {
+    emit(LoadingNumberTriviaState());
+
+    final either = await _getRandomNumberTrivia(NoParams());
+
+    _emitNumberTriviaRetrievalResult(either, emit);
+  }
+
   String _mapFailureToMessage(Failure failure) {
     late final String failureMessage;
 
@@ -81,7 +94,7 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
     return failureMessage;
   }
 
-  void _emitNumberTriviaRetrievalResult(
+  Future<void> _emitNumberTriviaRetrievalResult(
     Either<Failure, NumberTrivia> either,
     Emitter<NumberTriviaState> emit,
   ) async {
