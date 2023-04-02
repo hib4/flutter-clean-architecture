@@ -9,12 +9,12 @@ import 'package:flutter_clean_architecture/features/number_trivia/presentation/b
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'features/number_trivia/domain/repositories/number_trivia_repository.dart';
 
 final serviceLocator = GetIt.instance;
 
-Future<void> init() async {
+Future<void> initializeServiceLocator() async {
   /// Features - Number Trivia
   // bloc
   serviceLocator.registerFactory(
@@ -75,6 +75,6 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
 
   serviceLocator.registerLazySingleton(() => sharedPreferences);
-  serviceLocator.registerLazySingleton(() => http.Client);
+  serviceLocator.registerLazySingleton(() => Client());
   serviceLocator.registerLazySingleton(() => InternetConnectionChecker());
 }
